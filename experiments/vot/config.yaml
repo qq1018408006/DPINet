@@ -1,0 +1,98 @@
+META_ARC: "siamban_alex_l4"
+
+BACKBONE:
+    TYPE: "resnet50"
+    KWARGS:
+        used_layers: [ 3]
+    PRETRAINED: 'pretrained_models/resnet50.model'
+    TRAIN_LAYERS: ['layer2', 'layer3']
+    TRAIN_EPOCH: 10
+    LAYERS_LR: 0.1
+
+ATTN:
+    ATTN: True
+    TYPE: "attnalllayer"
+    KWARGS:
+        in_channels: [ 256]
+        type: 'cse'
+
+ADJUST:
+    ADJUST: True
+    TYPE: "AdjustAllLayer"
+    KWARGS:
+        in_channels: [ 1024]
+        out_channels: [256]
+
+BAN:
+    BAN: True
+    HIST_INFO: True
+    TYPE: 'MultiBAN_hist_info' ##option
+    KWARGS:
+        in_channels: [ 256]
+        cls_out_channels: 2  # if use sigmoid cls, cls_out_channel = 1 else 2
+        weighted: True
+        fusion_pattern: 'mdi'
+
+POINT:
+    STRIDE: 8
+
+TRACK:
+    TYPE: 'DIPNet'
+    WINDOW_INFLUENCE:  0.37195803457903576
+    PENALTY_K: 0.10427413680919843
+    LR: 0.4773769496755441
+    EXEMPLAR_SIZE: 127
+    INSTANCE_SIZE: 255
+    BASE_SIZE: 8
+    CONTEXT_AMOUNT: 0.5
+
+TRAIN:
+    EPOCH: 20
+    START_EPOCH: 0 # 0 or resume checkpoint
+    BATCH_SIZE: 48
+    BASE_LR: 0.01
+    CLS_WEIGHT: 1.0
+    LOC_WEIGHT: 1.0
+    RESUME: 'true' # '' or 'true'
+    PRETRAINED: ''
+    BASE_SIZE: 8
+    LR:
+        TYPE: 'log'
+        KWARGS:
+            start_lr: 0.005
+            end_lr: 0.00005
+    LR_WARMUP:
+        TYPE: 'step'
+        EPOCH: 5
+        KWARGS:
+            start_lr: 0.001
+            end_lr: 0.005
+            step: 1
+
+DATASET:
+    NAMES:
+    - 'VID'
+    - 'YOUTUBEBB'
+    - 'COCO'
+    - 'DET'
+    - 'GOT10K'
+    - 'LASOT'
+
+    VIDEOS_PER_EPOCH: 1000000
+
+    TEMPLATE:
+        SHIFT: 4
+        SCALE: 0.05
+        BLUR: 0.0
+        FLIP: 0.0
+        COLOR: 1.0
+
+    SEARCH:
+        SHIFT: 64
+        SCALE: 0.18
+        BLUR: 0.2
+        FLIP: 0.0
+        COLOR: 1.0
+
+    NEG: 0.2
+    GRAY: 0.0
